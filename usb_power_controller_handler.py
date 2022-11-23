@@ -36,18 +36,21 @@ class UsbPowerControllerHandler:
 
     def set_state(self, state):
         self.log("Setting USB power state to: " + convert_state_str(state))
-        # Raspberry pi: All ports power is disabled at the same time, so just take the first
-        if self._usb_hub.find_port(1).status == state:
+        # Raspberry pi: All port's power is disabled at the same time, so just take the first
+        if self._usb_hub.ports[0].status == state:
             self.log("USB power state already " + convert_state_str(state))
             self._current_state = state
             return
         self.log("Changing USB power state to " + convert_state_str(state))
         self._current_state = state
-        self._usb_ports[0].status = state
-        self.log("Current state as read from system is " + convert_state_str(self._usb_ports[0].status))
+        self._usb_hub.ports[0].status = state
+        self.log("Current state as read from system is " + convert_state_str(self._usb_hub.ports[0].status))
+
+        if self.on_state_change is not None:
+            self.on_state_change(self.state_out())
 
     def state_out(self):
-        return self._usb_ports[0].status
+        return self._usb_hub.ports[0].status
 
     def log(self, message):
         if self.on_log_message is not None:

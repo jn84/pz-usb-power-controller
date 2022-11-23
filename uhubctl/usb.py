@@ -98,7 +98,6 @@ class Hub:
 
         for line in _uhubctl(["-l", self.path]):
             regex = pattern.match(line)
-            print(line)
 
             if regex:
                 port = Port(self, regex.group(1))

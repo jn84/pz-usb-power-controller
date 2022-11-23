@@ -14,6 +14,8 @@ from os import path
 from os import mkdir
 from os import R_OK
 
+from usb_power_controller_config_handler import UsbPowerControllerConfigurationHandler
+
 VERSION = '0.1'
 
 LOG_LEVEL = logging.DEBUG
@@ -79,10 +81,13 @@ if not path.isfile(args.config_file) or not access(args.config_file, R_OK):
 # Parse the config file
 
 try:
-    config = usb_power_controller_config_handler.UsbPowerControllerConfigurationHandler(args.config_file)
+    config: UsbPowerControllerConfigurationHandler = usb_power_controller_config_handler.UsbPowerControllerConfigurationHandler(args.config_file)
 except ConfigError as e:
     print(str(e))
     sys.exit('Error parsing the config file')
+except ValueError as e:
+    print(str(e))
+    sys.exit("Unknown hub specified in config. Exiting")
 except TypeError as e:
     print(str(e))
     sys.exit('Error converting config variable to correct type. Check that all configuration variables '
@@ -96,7 +101,7 @@ logger.info('Configuration file successfully loaded')
 logger.info('Initializing USB power controller handler...')
 
 # Initialize door
-usb_power = usb_power_controller_handler.UsbPowerControllerHandler()
+usb_power = usb_power_controller_handler.UsbPowerControllerHandler(config.USB_HUB)
 
 
 logger.info('USB power controller handler successfully initialized')
@@ -123,7 +128,7 @@ def on_message(client_local, userdata, msg):
     # Should convert state message to bool
     # Payload strings are byte arrays. Need to decode them.
     state = parse_bool_payload(msg.payload.decode())
-    logger.info('Set USB power state message received. Sending command to switch handler.')
+    logger.info('Set USB power state message received. Sending command to usb power handler.')
     usb_power.set_state(state)
 
 

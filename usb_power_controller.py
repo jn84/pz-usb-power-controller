@@ -89,7 +89,7 @@ except TypeError as e:
              'are in the correct format.')
 
 
-logger = get_timed_rotating_logger(config.USB_POWER_NAME,
+logger = get_timed_rotating_logger(config.DEVICE_NAME,
                                    LOG_LEVEL)
 
 logger.info('Configuration file successfully loaded')

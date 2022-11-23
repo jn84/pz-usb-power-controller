@@ -14,6 +14,7 @@ class UsbPowerControllerConfigurationHandler:
     MQTT_PORT_SSL = None  # type: int
     MQTT_TOPIC_SET_USB_POWER_STATE = None  # type: str
     MQTT_TOPIC_REPORT_USB_POWER_STATE = None  # type: str
+    USB_HUB = None # type: str
 
     _hexdigits = '0123456789abcdef'
 
@@ -66,9 +67,9 @@ class UsbPowerControllerConfigurationHandler:
         config = configparser.ConfigParser()
         config.read(config_file)
 
-        self.USB_POWER_NAME = self.\
-            str_parse(config['General']['switch_name'],
-                      'switch_name',
+        self.DEVICE_NAME = self.\
+            str_parse(config['General']['device_name'],
+                      'device_name',
                       False)
         self.MQTT_HOST = self.\
             str_parse(config['MQTTBrokerConfig']['mqtt_host'],
@@ -103,12 +104,16 @@ class UsbPowerControllerConfigurationHandler:
                       'mqtt_port_ssl',
                       not self.MQTT_USE_SSL)
         self.MQTT_TOPIC_SET_USB_POWER_STATE = self.\
-            str_parse(config['MQTTTopicConfig']['mqtt_topic_set_switch_state'],
-                      'mqtt_topic_set_switch_state',
+            str_parse(config['MQTTTopicConfig']['mqtt_topic_set_usb_power_state'],
+                      'mqtt_topic_set_usb_power_state',
                       False)
         self.MQTT_TOPIC_REPORT_USB_POWER_STATE = self.\
-            str_parse(config['MQTTTopicConfig']['mqtt_topic_report_switch_state'],
-                      'mqtt_topic_report_switch_state',
+            str_parse(config['MQTTTopicConfig']['mqtt_topic_report_usb_power_state'],
+                      'mqtt_topic_report_usb_power_state',
+                      False)
+        self.USB_HUB = self.\
+            str_parse(config['USBPortConfig']['usb_hub'],
+                      'usb_hub',
                       False)
 
         if self.MQTT_CLIENT_ID == '' or self.MQTT_CLIENT_ID is None:

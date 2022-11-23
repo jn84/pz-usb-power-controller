@@ -29,20 +29,15 @@ class UsbPowerControllerHandler:
         self._usb_hub_str = _hub_str
         self._usb_hub = Hub(self._usb_hub_str, enumerate_ports=True)
         # Check if hub actually has anything in it
-        if len(self._usb_hub) is 0:
+        if len(self._usb_hub.ports) is 0:
             raise ValueError("Invalid USB hub specified in configuration. Specified hub contains 0 ports")
-        # Seems good
-
-
-
-        #for hub in self._usb_power_ctl.discover_hubs():
-        #    for port in hub.ports:
-        #        self._usb_ports.append(port)
+            # TODO: Should ensure this error is caught in controller
+        # Seems good, moving on...
 
     def set_state(self, state):
         self.log("Setting USB power state to: " + convert_state_str(state))
         # Raspberry pi: All ports power is disabled at the same time, so just take the first
-        if self._usb_ports[0].status == state:
+        if self._usb_hub.find_port(1).status == state:
             self.log("USB power state already " + convert_state_str(state))
             self._current_state = state
             return

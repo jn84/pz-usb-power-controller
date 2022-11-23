@@ -94,10 +94,11 @@ class Hub:
         """
         Discover ports for this hub instance
         """
-        pattern = re.compile(r"  Port (\d+): \d{4} (power|off)")
+        pattern = re.compile(r"  Port (\d+): [0-9A-Fa-f]{4} (power|off)")
 
         for line in _uhubctl(["-l", self.path]):
             regex = pattern.match(line)
+            print(line)
 
             if regex:
                 port = Port(self, regex.group(1))
